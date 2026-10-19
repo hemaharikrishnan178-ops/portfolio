@@ -1,7 +1,16 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Code2, GitBranch, Mail, Network } from 'lucide-react'
 import './App.css'
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
+const currentYear = new Date().getFullYear()
+
+const socialLinks = [
+  { label: 'GitHub', href: 'https://github.com/hemaharikrishnan178-ops', Icon: GitBranch, external: true },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/hema-harikrishnan', Icon: Network, external: true },
+  { label: 'LeetCode', href: 'https://leetcode.com/u/hemaharikrishnan/', Icon: Code2, external: true },
+  { label: 'Email', href: 'mailto:hemaharikrishnan178@gmail.com', Icon: Mail, external: false },
+]
 
 const defaultForm = {
   name: '',
@@ -39,6 +48,26 @@ const certifications = [
   'Hackathon-focused problem solving and design thinking',
   'Continuous practice in Python, web development, and AI-driven product ideas',
 ]
+
+function SocialLinks({ className = 'social-links' }) {
+  return (
+    <div className={className} aria-label="Social links">
+      {socialLinks.map(({ label, href, Icon, external }) => (
+        <a
+          key={label}
+          className="social-link"
+          href={href}
+          aria-label={label}
+          target={external ? '_blank' : undefined}
+          rel={external ? 'noreferrer' : undefined}
+        >
+          <Icon size={18} aria-hidden="true" />
+          <span>{label}</span>
+        </a>
+      ))}
+    </div>
+  )
+}
 
 function App() {
   const [projects, setProjects] = useState([])
@@ -333,6 +362,7 @@ function App() {
                 Whether you are looking for collaboration, a project discussion, or a chance to work on an idea
                 with purpose, I would be glad to hear from you.
               </p>
+              <SocialLinks />
             </div>
 
             <form className="contact-form" onSubmit={handleSubmit}>
@@ -367,6 +397,13 @@ function App() {
           </div>
         </section>
       </main>
+
+      <footer className="site-footer">
+        <div className="container footer-content">
+          <p>© {currentYear} Hema H</p>
+          <SocialLinks className="social-links footer-social-links" />
+        </div>
+      </footer>
 
       {selectedProject && (
         <div className="modal-backdrop" onClick={() => setSelectedProject(null)}>
