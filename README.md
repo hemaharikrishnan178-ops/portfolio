@@ -2,7 +2,8 @@
 
 Portfolio website for the Thiranex internship assignment. It presents Hema H's profile, skills, learning-focused experience, and exactly two portfolio projects: **TrustShare** and **Uzhavan AI**.
 
-> Repository and live-site links will be added after those services have been created and verified. Neither is published yet.
+- **GitHub:** [hemaharikrishnan178-ops/portfolio](https://github.com/hemaharikrishnan178-ops/portfolio)
+- **Live website:** Not deployed yet.
 
 ## Features
 
@@ -166,21 +167,19 @@ npm run build
 
 ## Deployment
 
-The application has not been deployed. No hosting provider or public repository is configured yet.
+`vercel.json` configures one Vercel project with two services: the Flask API under `/api/*` and the Vite frontend for the remaining paths. Both are served from the same HTTPS origin, so the frontend uses relative API URLs and does not need a public backend URL variable.
 
-Suggested compatible architecture (choose services only after reviewing their current plans/limits):
+1. Import this GitHub repository into Vercel and keep the repository root as the project root so it can discover `vercel.json`.
+2. Configure the backend service environment variables in Vercel: `APP_ENV=production`, `SECRET_KEY`, `DATABASE_URL`, and `FRONTEND_ORIGINS` (the deployed site origin).
+3. Provision a persistent PostgreSQL database and set `DATABASE_URL` to its private connection string using the `postgresql+psycopg://` scheme. Do not use local SQLite for serverless production.
+4. Apply `flask --app run db upgrade` and `flask --app run seed` from the backend service before the first public use and after schema updates.
+5. Deploy, then verify `/api/health`, both project records, skills, contact persistence, the PDF download, refresh behavior, and HTTPS.
 
-1. Frontend static hosting (Vercel or Netlify), with the frontend folder as the project root, build command `npm run build`, output folder `dist`, and `VITE_API_URL` set to the backend's HTTPS base URL at build time.
-2. Python web service hosting for the Flask backend, with the backend folder as the project root and start command `gunicorn --bind 0.0.0.0:$PORT run:app` (or the host's recommended WSGI server).
-3. A managed PostgreSQL database. Set `DATABASE_URL`, `SECRET_KEY`, `APP_ENV=production`, and `FRONTEND_ORIGINS` in the backend service's private environment settings.
-4. Configure a release/pre-deploy command from the backend folder: `flask --app run db upgrade && flask --app run seed`.
-5. Verify migrations/schema, CORS, API endpoints, contact persistence, resume download, HTTPS, and page refresh behavior after deployment.
-
-Ensure the provider's database URL uses the Psycopg 3 driver. The current development server (`python run.py`) is not intended for production.
+Never put backend secrets in `VITE_*` environment variables or commit them. The deployment is not complete until the project and database have been provisioned and the live API checks pass.
 
 ## Known limitations and remaining setup
 
-- GitHub repository and live website are not available yet.
+- The GitHub repository is public; the live website is not deployed yet.
 - The TrustShare GitHub repository URL and demo URLs are intentionally omitted until verified.
 - Contact rate limiting is in-memory and per backend process; use shared persistent rate limiting if scaling across multiple workers.
 - Schema changes should use reviewed Flask-Migrate revisions.
